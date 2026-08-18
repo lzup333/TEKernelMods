@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.freecraft",
+  "name": "自由合成 (FreeCraft)",
+  "author": "lzup",
+  "version": "1.0.1",
+  "versionCode": 20260808,
+  "brieflyDescribe": "合成无需对应材料、无需工作站, 且不消耗材料",
+  "description": "清除所有配方的工作站、液体、环境前置与材料要求，合成列表显示全部配方。\n合成不再消耗任何材料。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}

@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.multiprojectile",
+  "name": "多倍弹幕 (MultiProjectile)",
+  "author": "lzup",
+  "version": "1.0.0",
+  "versionCode": 20260809,
+  "brieflyDescribe": "武器射击时弹幕变为 5 倍, 小角度扇形散射",
+  "description": "武器射出的每发弹幕额外复制 4 份（共 5 倍），并按小角度扇形散开。\n仅影响本地玩家由武器射出的弹幕，自动过滤钓鱼浮标、钩爪、召唤物与哨兵，NPC 与环境弹幕不受影响。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}

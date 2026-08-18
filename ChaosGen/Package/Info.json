@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.chaosgen",
+  "name": "混沌生成 (ChaosGen)",
+  "author": "lzup",
+  "version": "1.1.0",
+  "versionCode": 20260808,
+  "brieflyDescribe": "每次新建世界时把全世界所有实心方块随机化为安全图格",
+  "description": "新建世界时自动将全图所有实心方块随机替换为任意安全图格。\n排除箱子、门、牌子、床、家具等结构类方块，保证世界正常可用。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}

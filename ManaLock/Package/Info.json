@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.manalock",
+  "name": "魔力锁定 (ManaLock)",
+  "author": "lzup",
+  "version": "1.0.0",
+  "versionCode": 20260808,
+  "brieflyDescribe": "每帧将当前魔力锁定为最大值, 实现无限魔力",
+  "description": "每帧将玩家的当前魔力值锁定为最大值，实现无限魔力，施法不再有魔力负担。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}

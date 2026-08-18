@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.random_damage",
+  "name": "随机伤害 (Random Damage)",
+  "author": "lzup",
+  "version": "1.1.0",
+  "versionCode": 20260805,
+  "brieflyDescribe": "所有武器每次攻击造成 1~100 的随机伤害",
+  "description": "所有武器每次攻击的伤害被随机化为 1~100 之间的任意值。\n一击可能打出最高伤害，也可能几乎无伤害，充满变数。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}

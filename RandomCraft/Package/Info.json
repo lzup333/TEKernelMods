@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.randomcraft",
+  "name": "随机合成 (RandomCraft)",
+  "author": "lzup",
+  "version": "1.0.0",
+  "versionCode": 20260809,
+  "brieflyDescribe": "每次合成随机产出物品, 每个配方的所需材料也随机",
+  "description": "每个配方的材料被随机替换为 1~3 种原版材料（堆叠 1~9），每次合成的产物也会被随机替换为另一种可合成物品。\n材料与产物均来自原版配方表，不会产生无效物品。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}
