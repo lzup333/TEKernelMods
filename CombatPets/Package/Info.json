@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.projectile.combatpets",
+  "name": "战斗宠物 (CombatPets)",
+  "author": "lzup",
+  "version": "4.2.0",
+  "versionCode": 20260908,
+  "brieflyDescribe": "宠物变成会战斗的召唤物，伤害随时期成长",
+  "description": "宠物保留各自原有 AI 与行为，附近有敌怪时主动跑过去攻击，伤害随世界进程成长（9 个时期）。\n宠物物品标记为召唤伤害物品并同步伤害数值。\n支持 PC / 手机版 Terraria 1.4.5",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": false,
+  "experimental": true,
+  "deprecated": false,
+  "hasExtendedContent": true
+}

@@ -1,0 +1,52 @@
+{
+  "pkgId": "lzup.player.nightvision",
+  "name": "夜视 (NightVision)",
+  "author": "lzup",
+  "version": "2.1.0",
+  "versionCode": 20260901,
+  "brieflyDescribe": "完全夜视：全图彻底明亮(Full Bright)",
+  "description": "无条件给予玩家夜视能力，效果等同永久佩戴夜视头盔/夜视药水，但不占用饰品栏与 Buff 栏。\n黑暗环境、洞穴、地下均清晰可见。\n支持 PC / 手机版 Terraria 1.4.5\n彩色照明模式照亮全屏，其他照明模式照亮周围（PC端只在彩色模式生效）",
+  "features": [],
+  "sizeCategory": "TINY",
+  "targetGameVersion": "1.4.5.0",
+  "minGameVersion": "1.4.5.0",
+  "maxGameVersion": "1.4.5.0",
+  "support": {
+    "android": {
+      "arm64": true,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "windows": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": true
+    },
+    "linux": {
+      "arm64": false,
+      "arm": false,
+      "x64": true,
+      "x86": false
+    },
+    "mac": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    },
+    "ios": {
+      "arm64": false,
+      "arm": false,
+      "x64": false,
+      "x86": false
+    }
+  },
+  "dependence": [],
+  "conflicts": [],
+  "stableVerified": true,
+  "experimental": false,
+  "deprecated": false,
+  "hasExtendedContent": true
+}
