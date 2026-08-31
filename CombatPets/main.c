@@ -120,7 +120,17 @@ static bool g_ready = false;
 
 // 追击状态: 按弹幕 whoAmI 记录当前追击目标 (Main.npc 下标, -1 无)
 static int g_chase_target[1000];
+// 按弹幕 whoAmI 记录上次全量扫描的帧号(限频, 避免每帧扫 1000 NPC)
+static int g_chase_scan_tick[1000];
 static bool g_skip_ai = false;   // 本帧跳过宠物原 AI(冲刺接管)
+
+// Main.projPet 查询表(初始化时从 g_pet_projs 构建, 避免热路径反射)
+#define PROJ_TYPE_MAX 1110
+static bool g_pet_lookup[PROJ_TYPE_MAX];
+
+// 世界阶段缓存(每 120 个 AI 帧刷新一次)
+static int g_stage_cache = 0;
+static int g_stage_tick = 0;
 
 // Damage 单线程逐个调用, 伪装上下文用静态变量保存
 static bool g_dmg_spoofing = false;
@@ -314,13 +324,7 @@ static int LocalPlayer(void) {
 }
 
 static bool IsPetProj(int type) {
-    if (type == PROJ_BAT_OF_LIGHT || type == PROJ_EMPRESS_BLADE) return false;
-    if (!g_projPet_field) return false;
-    void* arr = NULL;
-    patchlib_field_get_value(g_projPet_field, NULL, &arr);
-    if (!arr) return false;
-    bool flag = false;
-    return patchlib_array_at(arr, (size_t)type, &flag) && flag;
+    return type >= 0 && type < PROJ_TYPE_MAX && g_pet_lookup[type];
 }
 
 /** 计算当前世界进程阶段 (0~8), 见文件头 */
@@ -345,9 +349,13 @@ static int PetBaseDmg(int projType) {
     return 10;
 }
 
-/** 宠物在当前时期的伤害 */
+/** 宠物在当前时期的伤害 (阶段每 120 帧刷新一次缓存) */
 static int PetDamageNow(int projType) {
-    int stage = CurrentStage();
+    if (++g_stage_tick >= 120) {
+        g_stage_tick = 0;
+        g_stage_cache = CurrentStage();
+    }
+    int stage = g_stage_cache;
     if (stage > 8) stage = 8;
     float d = (float)PetBaseDmg(projType) * g_stage_mult[stage];
     if (d > DAMAGE_CAP) d = DAMAGE_CAP;
@@ -455,9 +463,16 @@ static bool ChaseStep(void* pet, int target) {
     const float dist = sqrtf(dx * dx + dy * dy);
     if (dist < 0.001f) return false;
 
-    // 已贴近目标(接触范围), 停在原地蹭伤害即可
-    if (dist < 24.0f) {
-        EntityVelSet(pet, 0.0f, 0.0f);
+    // 贴身判定按双方碰撞箱计算, 保证接触(硬编码 24px 会导致
+    // 小型敌怪碰不到碰撞箱, 宠物悬停卡死且无接触伤害)
+    const float pw = (float)ObjInt(g_proj_width_field, pet);
+    const float nw = (float)ObjInt(g_proj_width_field, npc);
+    const float stopDist = (pw + nw) * 0.25f > 8.0f ? (pw + nw) * 0.25f : 8.0f;
+
+    if (dist <= stopDist) {
+        // 保持小幅压向目标, 维持重叠以持续触发接触伤害,
+        // 围绕中心来回微动而不会彻底停死
+        EntityVelSet(pet, dx / dist * 1.5f, dy / dist * 1.5f);
         return true;
     }
 
@@ -497,10 +512,18 @@ static bool AI_Prefix(patch_handle_t instance, void **args,
     ObjSetBool(g_proj_friendly_field, instance, true);
 
     // 追击状态机: 有效目标 => 接管; 无 => 归还原版 AI
+    // 无目标时限频扫描(每 ~20 帧一次), 避免每帧全量扫 1000 个 NPC
+    static int ai_tick = 0;
+    const int tick = ++ai_tick;
     int target = g_chase_target[whoAmI];
     if (!ChaseTargetValid(instance, target)) {
-        target = FindNearestEnemy(instance);
-        g_chase_target[whoAmI] = target;
+        if (tick - g_chase_scan_tick[whoAmI] >= 20) {
+            g_chase_scan_tick[whoAmI] = tick;
+            target = FindNearestEnemy(instance);
+            g_chase_target[whoAmI] = target;
+        } else {
+            target = -1;
+        }
     }
     if (target >= 0) {
         // 接管: 跳过原 AI。原 AI 的存活刷新(timeLeft=2)不会执行, 补上
@@ -583,11 +606,16 @@ static void SetDefaults_Postfix(patch_handle_t instance, void **args,
 
 // ============ 模块初始化 ============
 static void init_mod(kernel_mod_handle_t *handle) {
-    if (mod_logger_write) {
+    if (mod_logger_write)
         mod_logger_write(MOD_LOG_LEVEL_INFO, "CombatPets", "初始化战斗宠物模组");
-        mod_logger_write(MOD_LOG_LEVEL_INFO, "CombatPets", "私有目录: %s",
-                         handle && handle->private_dir ? handle->private_dir : "NULL");
+
+    // 0. 宠物弹幕查询表(热路径免反射)
+    for (size_t i = 0; i < PET_PROJ_COUNT; ++i) {
+        int t = g_pet_projs[i];
+        if (t >= 0 && t < PROJ_TYPE_MAX) g_pet_lookup[t] = true;
     }
+    g_stage_cache = 0;
+    g_stage_tick = 0;
 
     // 1. 类型
     g_main_type = patchlib_type_get_type("Terraria", "Main");
@@ -598,8 +626,6 @@ static void init_mod(kernel_mod_handle_t *handle) {
     g_entity_type = patchlib_type_get_type("Terraria", "Entity");
     if (!g_main_type || !g_npc_type || !g_player_type || !g_item_type ||
         !g_projectile_type || !g_entity_type) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "获取类型失败");
         return;
     }
 
@@ -611,15 +637,11 @@ static void init_mod(kernel_mod_handle_t *handle) {
         if (getter) g_get_myPlayer = (int (*)(void))patchlib_method_get_pointer(getter);
     }
     if (!g_get_myPlayer) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "获取 myPlayer 失败");
         return;
     }
 #else
     g_myPlayer_field = patchlib_type_get_field(g_main_type, "myPlayer");
     if (!g_myPlayer_field) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "获取 myPlayer 字段失败");
         return;
     }
 #endif
@@ -642,8 +664,6 @@ static void init_mod(kernel_mod_handle_t *handle) {
         !g_downed1 || !g_downed2 || !g_downed3 || !g_downedSlimeKing ||
         !g_downedQueenBee || !g_downedMechAny || !g_downedPlant ||
         !g_downedGolem || !g_downedCultist || !g_downedMoonlord) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "获取静态字段失败");
         return;
     }
 
@@ -679,8 +699,6 @@ static void init_mod(kernel_mod_handle_t *handle) {
         !g_npc_active_field || !g_npc_friendly_field || !g_npc_townNPC_field ||
         !g_npc_dontTake_field || !g_npc_life_field || !g_item_shoot_field ||
         !g_item_damage_field || !g_item_summon_field) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "获取实例字段失败");
         return;
     }
 
@@ -690,14 +708,10 @@ static void init_mod(kernel_mod_handle_t *handle) {
     if (!ai_method)
         ai_method = patchlib_type_get_method_by_param_count(g_projectile_type, "AI", 0);
     if (!ai_method) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "获取 Projectile.AI 方法失败");
         return;
     }
     g_hook_ai = patchlib_install_prepost_hook(ai_method, AI_Prefix, AI_Postfix);
     if (g_hook_ai == PATCH_HOOK_INVALID_ID) {
-        if (mod_logger_write)
-            mod_logger_write(MOD_LOG_LEVEL_ERROR, "CombatPets", "安装 AI Hook 失败");
         return;
     }
 
@@ -708,9 +722,6 @@ static void init_mod(kernel_mod_handle_t *handle) {
         dmg_method = patchlib_type_get_method_by_param_count(g_projectile_type, "Damage", 0);
     if (dmg_method) {
         g_hook_dmg = patchlib_install_prepost_hook(dmg_method, Damage_Prefix, Damage_Postfix);
-        if (g_hook_dmg == PATCH_HOOK_INVALID_ID && mod_logger_write) {
-            mod_logger_write(MOD_LOG_LEVEL_WARNING, "CombatPets", "安装 Damage Hook 失败(非致命)");
-        }
     }
 
     // SetDefaults(int, ItemVariant = null): 可选参数计入参数个数,
@@ -721,17 +732,9 @@ static void init_mod(kernel_mod_handle_t *handle) {
         setdef_method = patchlib_type_get_method_by_param_count(g_item_type, "SetDefaults", 1);
     if (setdef_method) {
         g_hook_item = patchlib_install_prepost_hook(setdef_method, NULL, SetDefaults_Postfix);
-        if (g_hook_item == PATCH_HOOK_INVALID_ID && mod_logger_write) {
-            mod_logger_write(MOD_LOG_LEVEL_WARNING, "CombatPets", "安装 SetDefaults Hook 失败(非致命)");
-        }
     }
 
     g_ready = true;
-    if (mod_logger_write) {
-        mod_logger_write(MOD_LOG_LEVEL_INFO, "CombatPets",
-                         "成功 Hook Projectile.AI (hook_id=%d), 战斗宠物已启用 (%u 种宠物)",
-                         (int)g_hook_ai, (unsigned)PET_PROJ_COUNT);
-    }
 }
 
 // ============ 模块清理 ============
@@ -824,8 +827,5 @@ static kernel_mod_ops_t g_ops = {
 
 // ============ 模块入口函数 ============
 kernel_mod_ops_t *create_kernel_mod(void) {
-    if (mod_logger_write) {
-        mod_logger_write(MOD_LOG_LEVEL_INFO, "CombatPets", "战斗宠物模组实例创建");
-    }
     return &g_ops;
 }
