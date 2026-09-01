@@ -56,6 +56,10 @@
 
 void (*mod_logger_write)(mod_log_level_t level, const char* tag, const char* fmt, ...) = NULL;
 
+// Collision.SolidTiles(int,int,int,int) (Collision.cs:3468) — 全 int 参数,
+// 用于墙体检测(视线/下一步阻挡), 避免直接位移穿墙
+static patch_handle_t g_solidTiles_method = NULL;
+
 #define PROJ_BAT_OF_LIGHT 755
 #define PROJ_EMPRESS_BLADE 946
 #define CHASE_RANGE_SQ (500.0f * 500.0f)
@@ -116,6 +120,7 @@ static const float g_stage_mult[9] =
 static patch_hook_id_t g_hook_ai = PATCH_HOOK_INVALID_ID;
 static patch_hook_id_t g_hook_item = PATCH_HOOK_INVALID_ID;
 static patch_hook_id_t g_hook_dmg = PATCH_HOOK_INVALID_ID;
+static patch_hook_id_t g_hook_addbuff = PATCH_HOOK_INVALID_ID;
 static bool g_ready = false;
 
 // 追击状态: 按弹幕 whoAmI 记录当前追击目标 (Main.npc 下标, -1 无)
@@ -169,6 +174,9 @@ static patch_handle_t g_npc_friendly_field = NULL;  // NPC.friendly (bool)
 static patch_handle_t g_npc_townNPC_field = NULL;   // NPC.townNPC (bool)
 static patch_handle_t g_npc_dontTake_field = NULL;  // NPC.dontTakeDamage (bool)
 static patch_handle_t g_npc_life_field = NULL;      // NPC.life (int)
+static patch_handle_t g_npc_lifeMax_field = NULL;   // NPC.lifeMax (int)
+static patch_handle_t g_npc_chaseable_field = NULL; // NPC.chaseable (bool)
+static patch_handle_t g_npc_immortal_field = NULL;  // NPC.immortal (bool)
 static patch_handle_t g_item_shoot_field = NULL;    // Item.shoot (int)
 static patch_handle_t g_item_damage_field = NULL;   // Item.damage (int)
 static patch_handle_t g_item_summon_field = NULL;   // Item.summon (bool)
@@ -383,23 +391,29 @@ static bool EntityCenter(void* ent, float* cx, float* cy) {
     return true;
 }
 
-/** 敌怪有效性 (近似 NPC.CanBeChasedBy) */
+/** 敌怪有效性 (对齐 NPC.CanBeChasedBy, NPC.cs:91070)
+ *  active && chaseable && lifeMax > 5 && !dontTakeDamage && !friendly && !immortal
+ *  chaseable 排除训练假人/小动物等; lifeMax > 5 排除史莱姆幼体等弱小生物 */
 static bool IsChaseableEnemy(void* npc) {
     if (!ObjInt(g_npc_active_field, npc)) return false;
+    if (ObjInt(g_npc_lifeMax_field, npc) <= 5) return false;
     if (ObjInt(g_npc_life_field, npc) <= 0) return false;
 #if defined(__ANDROID__)
+    bool* c = (bool*)patchlib_field_get_pointer(g_npc_chaseable_field, npc);
+    if (c && !*c) return false;
     bool* f = (bool*)patchlib_field_get_pointer(g_npc_friendly_field, npc);
     if (f && *f) return false;
-    bool* t = (bool*)patchlib_field_get_pointer(g_npc_townNPC_field, npc);
-    if (t && *t) return false;
     bool* d = (bool*)patchlib_field_get_pointer(g_npc_dontTake_field, npc);
     if (d && *d) return false;
+    bool* m = (bool*)patchlib_field_get_pointer(g_npc_immortal_field, npc);
+    if (m && *m) return false;
 #else
-    bool fv = false, tv = false, dv = false;
+    bool cv = false, fv = false, dv = false, mv = false;
+    patchlib_field_get_value(g_npc_chaseable_field, npc, &cv);
     patchlib_field_get_value(g_npc_friendly_field, npc, &fv);
-    patchlib_field_get_value(g_npc_townNPC_field, npc, &tv);
     patchlib_field_get_value(g_npc_dontTake_field, npc, &dv);
-    if (fv || tv || dv) return false;
+    patchlib_field_get_value(g_npc_immortal_field, npc, &mv);
+    if (!cv || fv || dv || mv) return false;
 #endif
     return true;
 }
@@ -433,7 +447,30 @@ static int FindNearestEnemy(void* pet) {
     return best;
 }
 
-/** 校验追击目标是否仍有效(存活且未远离) */
+/** 查询世界坐标所在图格是否为实心方块 */
+static bool TileSolidAt(float wx, float wy) {
+    if (!g_solidTiles_method) return false;
+    const int tx = (int)(wx / 16.0f);
+    const int ty = (int)(wy / 16.0f);
+    int r = 0;
+    void* args[4] = { &tx, &tx, &ty, &ty };
+    if (!patchlib_method_invoke_args(g_solidTiles_method, NULL, &r, args)) return false;
+    return r != 0;
+}
+
+/** 宠物中心到目标中心的直线路径是否通畅(按图格采样, 步长 16px) */
+static bool PathClear(float x1, float y1, float x2, float y2) {
+    const float dx = x2 - x1, dy = y2 - y1;
+    const float dist = sqrtf(dx * dx + dy * dy);
+    const int steps = (int)(dist / 16.0f);
+    for (int k = 1; k <= steps; ++k) {
+        const float t = (float)k / (float)(steps + 1);
+        if (TileSolidAt(x1 + dx * t, y1 + dy * t)) return false;
+    }
+    return true;
+}
+
+/** 校验追击目标是否仍有效(存活且未远离且路径通畅) */
 static bool ChaseTargetValid(void* pet, int target) {
     if (target < 0 || !g_npcArray_field) return false;
     void* arr = NULL;
@@ -446,7 +483,9 @@ static bool ChaseTargetValid(void* pet, int target) {
     float px, py, nx, ny;
     if (!EntityCenter(pet, &px, &py) || !EntityCenter(npc, &nx, &ny)) return false;
     const float dx = nx - px, dy = ny - py;
-    return dx * dx + dy * dy <= 700.0f * 700.0f;
+    if (dx * dx + dy * dy > 700.0f * 700.0f) return false;
+    // 视线被墙挡住则放弃追击(原地跟随玩家), 避免穿墙
+    return PathClear(px, py, nx, ny);
 }
 
 /** 冲刺一步: 直线冲向目标(速度 10px/帧), 返回是否仍在追击 */
@@ -476,8 +515,20 @@ static bool ChaseStep(void* pet, int target) {
         return true;
     }
 
-    const float vx = dx / dist * CHASE_SPEED;
-    const float vy = dy / dist * CHASE_SPEED;
+    // 速度平滑: 当前速度向目标方向缓转(0.25/帧), 冲刺呈柔和弧线
+    float cvx = 0.0f, cvy = 0.0f;
+    EntityVelGet(pet, &cvx, &cvy);
+    const float wantX = dx / dist * CHASE_SPEED;
+    const float wantY = dy / dist * CHASE_SPEED;
+    float vx = cvx + (wantX - cvx) * 0.25f;
+    float vy = cvy + (wantY - cvy) * 0.25f;
+
+    // 下一位置被方块挡住: 停止移动并放弃追击(交给原 AI), 不穿墙
+    if (TileSolidAt(px + vx, py + vy)) {
+        EntityVelSet(pet, 0.0f, 0.0f);
+        return false;
+    }
+
     EntityPosAdd(pet, vx, vy);
     EntityVelSet(pet, vx, vy);
     // 朝向
@@ -589,6 +640,21 @@ static void Damage_Postfix(patch_handle_t instance, void **args,
     }
 }
 
+// ============ Hook: Player.AddBuff_RemoveOldPetBuffsOfMatchingType (Prefix) ====
+// 原版宠物互斥的唯一入口 (Player.cs:5154): 新宠物 Buff 加入前删除所有
+// 已存在的 lightPet/vanityPet Buff。跳过它即可让多只宠物共存:
+//   - 宠物的生成/存续按 Buff 独立驱动 (BuffHandle_SpawnPetIfNeededAndSetTime,
+//     Player.cs:10634 起, 每种宠物有自己的玩家标志位与弹幕);
+//   - 同种宠物重复召唤走 AddBuff_TryUpdatingExistingBuffTime 刷新时长,
+//     不会走到这里, 不会产生重复弹幕;
+//   - 宠物栏(装备)仍是单槽, 属原版行为。
+// 注意 prefix 返回值语义与头文件注释相反: true = 跳过原方法。
+static bool RemoveOldPetBuffs_Prefix(patch_handle_t instance, void **args,
+                                     const patch_method_signature_t *sig_info, void *result) {
+    (void)instance; (void)args; (void)sig_info; (void)result;
+    return g_ready;
+}
+
 // ============ Hook: Item.SetDefaults (Postfix) ============
 // 宠物召唤物品: 标记为召唤伤害物品(summon = true, 与原版召唤武器一致),
 // 并把 item.damage 设为当前时期伤害(物品提示可见)。
@@ -688,6 +754,9 @@ static void init_mod(kernel_mod_handle_t *handle) {
     g_npc_townNPC_field = patchlib_type_get_field(g_npc_type, "townNPC");
     g_npc_dontTake_field = patchlib_type_get_field(g_npc_type, "dontTakeDamage");
     g_npc_life_field = patchlib_type_get_field(g_npc_type, "life");
+    g_npc_lifeMax_field = patchlib_type_get_field(g_npc_type, "lifeMax");
+    g_npc_chaseable_field = patchlib_type_get_field(g_npc_type, "chaseable");
+    g_npc_immortal_field = patchlib_type_get_field(g_npc_type, "immortal");
     g_item_shoot_field = patchlib_type_get_field(g_item_type, "shoot");
     g_item_damage_field = patchlib_type_get_field(g_item_type, "damage");
     g_item_summon_field = patchlib_type_get_field(g_item_type, "summon");
@@ -697,7 +766,8 @@ static void init_mod(kernel_mod_handle_t *handle) {
         !g_proj_whoAmI_field ||
         !g_proj_pos_field || !g_proj_width_field || !g_proj_height_field ||
         !g_npc_active_field || !g_npc_friendly_field || !g_npc_townNPC_field ||
-        !g_npc_dontTake_field || !g_npc_life_field || !g_item_shoot_field ||
+        !g_npc_dontTake_field || !g_npc_life_field || !g_npc_lifeMax_field ||
+        !g_npc_chaseable_field || !g_npc_immortal_field || !g_item_shoot_field ||
         !g_item_damage_field || !g_item_summon_field) {
         return;
     }
@@ -724,6 +794,29 @@ static void init_mod(kernel_mod_handle_t *handle) {
         g_hook_dmg = patchlib_install_prepost_hook(dmg_method, Damage_Prefix, Damage_Postfix);
     }
 
+    {
+        patch_handle_t collision_type = patchlib_type_get_type("Terraria", "Collision");
+        if (collision_type) {
+            g_solidTiles_method = patchlib_type_get_method_by_param_count(
+                collision_type, "SolidTiles", 4);
+        }
+        if (!g_solidTiles_method && mod_logger_write) {
+            mod_logger_write(MOD_LOG_LEVEL_WARNING, "CombatPets",
+                             "获取 Collision.SolidTiles 失败(穿墙保护不可用)");
+        }
+    }
+
+    // 6. 多宠物共存: 跳过宠物 Buff 互斥清理 (Player.cs:5154)
+    patch_handle_t removePet_method = patchlib_type_get_method(
+        g_player_type, "AddBuff_RemoveOldPetBuffsOfMatchingType");
+    if (!removePet_method)
+        removePet_method = patchlib_type_get_method_by_param_count(
+            g_player_type, "AddBuff_RemoveOldPetBuffsOfMatchingType", 1);
+    if (removePet_method) {
+        g_hook_addbuff = patchlib_install_prepost_hook(
+            removePet_method, RemoveOldPetBuffs_Prefix, NULL);
+    }
+
     // SetDefaults(int, ItemVariant = null): 可选参数计入参数个数,
     // 实际为 2 参; 兼容两种取法
     patch_handle_t setdef_method =
@@ -735,6 +828,12 @@ static void init_mod(kernel_mod_handle_t *handle) {
     }
 
     g_ready = true;
+    if (mod_logger_write) {
+        mod_logger_write(MOD_LOG_LEVEL_INFO, "CombatPets",
+                         "初始化完成: AI=%d Damage=%d Item=%d 多宠物=%d",
+                         (int)g_hook_ai, (int)g_hook_dmg, (int)g_hook_item,
+                         (int)g_hook_addbuff);
+    }
 }
 
 // ============ 模块清理 ============
@@ -752,6 +851,10 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
     if (g_hook_dmg != PATCH_HOOK_INVALID_ID) {
         patchlib_uninstall_hook(g_hook_dmg);
         g_hook_dmg = PATCH_HOOK_INVALID_ID;
+    }
+    if (g_hook_addbuff != PATCH_HOOK_INVALID_ID) {
+        patchlib_uninstall_hook(g_hook_addbuff);
+        g_hook_addbuff = PATCH_HOOK_INVALID_ID;
     }
 
     g_ready = false;
@@ -787,6 +890,9 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
     g_npc_townNPC_field = NULL;
     g_npc_dontTake_field = NULL;
     g_npc_life_field = NULL;
+    g_npc_lifeMax_field = NULL;
+    g_npc_chaseable_field = NULL;
+    g_npc_immortal_field = NULL;
     g_item_shoot_field = NULL;
     g_item_damage_field = NULL;
     g_item_summon_field = NULL;
@@ -809,7 +915,7 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
 // ============ 模块信息 ============
 static kernel_mod_info_t g_mod_info = {
         .pkg_id = "lzup.projectile.combatpets",
-        .version_code = 9,
+        .version_code = 14,
         .api_version = 1,
         .version = "4.2.0",
 };
