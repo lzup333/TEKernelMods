@@ -37,7 +37,7 @@ DEFAULT_TARGETS="android,native,mingw"
 DEFAULT_ABI="arm64-v8a"
 DEFAULT_MINGW_ARCH="x86_64,i686"
 DEFAULT_PLATFORM="android-27"
-FALLBACK_NDK="/home/lzup/Android/Sdk/ndk/29.0.14206865"
+FALLBACK_NDK="/home/lzup/Android/Sdk/ndk/28.0.13004108/"
 
 TARGETS="$DEFAULT_TARGETS"
 ABI="$DEFAULT_ABI"
