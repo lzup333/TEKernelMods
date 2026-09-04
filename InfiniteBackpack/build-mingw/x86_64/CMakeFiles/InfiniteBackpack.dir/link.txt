@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/InfiniteBackpack.dir/objects.a
-/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/InfiniteBackpack.dir/objects.a @CMakeFiles/InfiniteBackpack.dir/objects1.rsp
-/usr/bin/x86_64-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libInfiniteBackpack.dll -Wl,--out-implib,libInfiniteBackpack.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/InfiniteBackpack.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/InfiniteBackpack.dir/linkLibs.rsp

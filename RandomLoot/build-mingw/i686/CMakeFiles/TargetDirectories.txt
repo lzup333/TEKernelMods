@@ -1,3 +1,0 @@
-/home/lzup/项目/TEKernelMods/RandomLoot/build-mingw/i686/CMakeFiles/RandomLoot.dir
-/home/lzup/项目/TEKernelMods/RandomLoot/build-mingw/i686/CMakeFiles/edit_cache.dir
-/home/lzup/项目/TEKernelMods/RandomLoot/build-mingw/i686/CMakeFiles/rebuild_cache.dir

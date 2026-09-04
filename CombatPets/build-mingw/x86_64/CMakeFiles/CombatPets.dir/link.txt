@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/CombatPets.dir/objects.a
-/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/CombatPets.dir/objects.a @CMakeFiles/CombatPets.dir/objects1.rsp
-/usr/bin/x86_64-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libCombatPets.dll -Wl,--out-implib,libCombatPets.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/CombatPets.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/CombatPets.dir/linkLibs.rsp

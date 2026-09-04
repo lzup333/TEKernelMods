@@ -1,3 +1,0 @@
-/home/lzup/项目/TEKernelMods/ChaosGen/build/CMakeFiles/ChaosGen.dir
-/home/lzup/项目/TEKernelMods/ChaosGen/build/CMakeFiles/edit_cache.dir
-/home/lzup/项目/TEKernelMods/ChaosGen/build/CMakeFiles/rebuild_cache.dir

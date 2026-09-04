@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/PocketGear.dir/objects.a
-/usr/bin/i686-w64-mingw32-ar qc CMakeFiles/PocketGear.dir/objects.a @CMakeFiles/PocketGear.dir/objects1.rsp
-/usr/bin/i686-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libPocketGear.dll -Wl,--out-implib,libPocketGear.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/PocketGear.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/PocketGear.dir/linkLibs.rsp

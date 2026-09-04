@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/MultiProjectile.dir/objects.a
-/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/MultiProjectile.dir/objects.a @CMakeFiles/MultiProjectile.dir/objects1.rsp
-/usr/bin/x86_64-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libMultiProjectile.dll -Wl,--out-implib,libMultiProjectile.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/MultiProjectile.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/MultiProjectile.dir/linkLibs.rsp

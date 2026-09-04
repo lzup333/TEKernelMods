@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -Wl,--dependency-file=CMakeFiles/ManaLock.dir/link.d -Wl,-soname,libManaLock.so -o libManaLock.so CMakeFiles/ManaLock.dir/main.c.o CMakeFiles/ManaLock.dir/tefkernel/tef_api_imp.c.o   -L/home/lzup/项目/TEKernelMods/ManaLock/./mod-api  -L/home/lzup/项目/TEKernelMods/ManaLock/./tefkernel

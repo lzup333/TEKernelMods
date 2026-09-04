@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/NightVision.dir/objects.a
-/usr/bin/i686-w64-mingw32-ar qc CMakeFiles/NightVision.dir/objects.a @CMakeFiles/NightVision.dir/objects1.rsp
-/usr/bin/i686-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libNightVision.dll -Wl,--out-implib,libNightVision.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/NightVision.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/NightVision.dir/linkLibs.rsp

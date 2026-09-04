@@ -1,3 +1,0 @@
-/home/lzup/项目/TEKernelMods/PocketGear/build-mingw/x86_64/CMakeFiles/PocketGear.dir
-/home/lzup/项目/TEKernelMods/PocketGear/build-mingw/x86_64/CMakeFiles/edit_cache.dir
-/home/lzup/项目/TEKernelMods/PocketGear/build-mingw/x86_64/CMakeFiles/rebuild_cache.dir

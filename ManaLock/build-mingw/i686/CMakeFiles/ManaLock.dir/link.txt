@@ -1,3 +1,0 @@
-/usr/bin/cmake -E rm -f CMakeFiles/ManaLock.dir/objects.a
-/usr/bin/i686-w64-mingw32-ar qc CMakeFiles/ManaLock.dir/objects.a @CMakeFiles/ManaLock.dir/objects1.rsp
-/usr/bin/i686-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libManaLock.dll -Wl,--out-implib,libManaLock.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/ManaLock.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/ManaLock.dir/linkLibs.rsp

@@ -1,3 +1,0 @@
-/home/lzup/项目/TEKernelMods/FreeCraft/build-mingw/x86_64/CMakeFiles/FreeCraft.dir
-/home/lzup/项目/TEKernelMods/FreeCraft/build-mingw/x86_64/CMakeFiles/edit_cache.dir
-/home/lzup/项目/TEKernelMods/FreeCraft/build-mingw/x86_64/CMakeFiles/rebuild_cache.dir

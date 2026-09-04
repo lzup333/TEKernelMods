@@ -1,3 +1,0 @@
-/home/lzup/项目/TEKernelMods/RandomCraft/build-native/CMakeFiles/RandomCraft.dir
-/home/lzup/项目/TEKernelMods/RandomCraft/build-native/CMakeFiles/edit_cache.dir
-/home/lzup/项目/TEKernelMods/RandomCraft/build-native/CMakeFiles/rebuild_cache.dir

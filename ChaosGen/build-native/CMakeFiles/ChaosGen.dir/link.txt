@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -Wl,--dependency-file=CMakeFiles/ChaosGen.dir/link.d -Wl,-soname,libChaosGen.so -o libChaosGen.so CMakeFiles/ChaosGen.dir/main.c.o CMakeFiles/ChaosGen.dir/tefkernel/tef_api_imp.c.o   -L/home/lzup/项目/TEKernelMods/ChaosGen/./mod-api  -L/home/lzup/项目/TEKernelMods/ChaosGen/./tefkernel

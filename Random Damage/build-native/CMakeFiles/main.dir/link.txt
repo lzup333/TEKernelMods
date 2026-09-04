@@ -1,1 +1,0 @@
-/usr/bin/cc -fPIC -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -Wl,--dependency-file=CMakeFiles/main.dir/link.d -Wl,-soname,libmain.so -o libmain.so CMakeFiles/main.dir/main.c.o CMakeFiles/main.dir/tefkernel/tef_api_imp.c.o   -L"/home/lzup/项目/TEKernelMods/Random Damage/./mod-api"  -L"/home/lzup/项目/TEKernelMods/Random Damage/./tefkernel"
