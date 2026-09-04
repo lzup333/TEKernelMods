@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/RandomLoot/build-native/CMakeFiles/RandomLoot.dir
+/home/lzup/项目/TEKernelMods/RandomLoot/build-native/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/RandomLoot/build-native/CMakeFiles/rebuild_cache.dir

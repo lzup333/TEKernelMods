@@ -430,9 +430,10 @@ static void init_mod(kernel_mod_handle_t *handle) {
         }
     }
 
-    // 4. 获取 Player.PickTile(实例方法, 3 个参数: int x, int y, int pickPower)
-    //    只在玩家挖矿时调用, 世界生成不会经过它, 因此不会干扰/崩溃世界生成
-    picktile_method = patchlib_type_get_method_by_param_count(player_type, "PickTile", 3);
+    // 4. 获取 Player.PickTile(实例方法)
+    //    1.4.5.8: 签名为 (int x, int y, int pickPower, int dealDamageAsIfBaseNumberIs = -1),
+    //    共 4 参; 只在玩家挖矿时调用, 世界生成不会经过它, 因此不会干扰/崩溃世界生成
+    picktile_method = patchlib_type_get_method_by_param_count(player_type, "PickTile", 4);
     if (!picktile_method) {
         // 参数数量匹配失败时, 尝试通过名称获取
         picktile_method = patchlib_type_get_method(player_type, "PickTile");

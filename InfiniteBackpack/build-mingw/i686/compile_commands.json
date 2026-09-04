@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/lzup/项目/TEKernelMods/InfiniteBackpack/build-mingw/i686",
+  "command": "/usr/bin/i686-w64-mingw32-gcc -DInfiniteBackpack_EXPORTS  -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -o CMakeFiles/InfiniteBackpack.dir/main.c.obj -c /home/lzup/项目/TEKernelMods/InfiniteBackpack/main.c",
+  "file": "/home/lzup/项目/TEKernelMods/InfiniteBackpack/main.c",
+  "output": "CMakeFiles/InfiniteBackpack.dir/main.c.obj"
+},
+{
+  "directory": "/home/lzup/项目/TEKernelMods/InfiniteBackpack/build-mingw/i686",
+  "command": "/usr/bin/i686-w64-mingw32-gcc -DInfiniteBackpack_EXPORTS  -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -o CMakeFiles/InfiniteBackpack.dir/tefkernel/tef_api_imp.c.obj -c /home/lzup/项目/TEKernelMods/InfiniteBackpack/tefkernel/tef_api_imp.c",
+  "file": "/home/lzup/项目/TEKernelMods/InfiniteBackpack/tefkernel/tef_api_imp.c",
+  "output": "CMakeFiles/InfiniteBackpack.dir/tefkernel/tef_api_imp.c.obj"
+}
+]

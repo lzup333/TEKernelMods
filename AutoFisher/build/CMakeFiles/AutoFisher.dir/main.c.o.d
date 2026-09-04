@@ -1,0 +1,29 @@
+CMakeFiles/AutoFisher.dir/main.c.o: \
+  /home/lzup/项目/TEKernelMods/AutoFisher/main.c \
+  /home/lzup/项目/TEKernelMods/AutoFisher/mod-api/mod_core.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/mod-api/mod_logger.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/type.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/../tef_api.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/../tefstd/vector.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/stdbool.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/stddef.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/__stddef_ptrdiff_t.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/__stddef_size_t.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/__stddef_wchar_t.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/__stddef_null.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/__stddef_max_align_t.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/__stddef_offsetof.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/../tefstd/../tef_api.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/method.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/field.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/property.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/19/include/stdint.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/stdint.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/sys/cdefs.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/versioning.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/api-level.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/get_device_api_level_inlines.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/android/ndk-version.h \
+  /home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot/usr/include/bits/wchar_limits.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/struct/array.h \
+  /home/lzup/项目/TEKernelMods/AutoFisher/tefkernel/patchlib/struct/../type.h

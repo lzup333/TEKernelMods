@@ -1,0 +1,1 @@
+/usr/bin/cc -fPIC -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -Wl,--dependency-file=CMakeFiles/FreeCraft.dir/link.d -Wl,-soname,libFreeCraft.so -o libFreeCraft.so CMakeFiles/FreeCraft.dir/main.c.o CMakeFiles/FreeCraft.dir/tefkernel/tef_api_imp.c.o   -L/home/lzup/项目/TEKernelMods/FreeCraft/./mod-api  -L/home/lzup/项目/TEKernelMods/FreeCraft/./tefkernel

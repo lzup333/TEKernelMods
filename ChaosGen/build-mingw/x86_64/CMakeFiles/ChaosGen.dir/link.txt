@@ -1,0 +1,3 @@
+/usr/bin/cmake -E rm -f CMakeFiles/ChaosGen.dir/objects.a
+/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/ChaosGen.dir/objects.a @CMakeFiles/ChaosGen.dir/objects1.rsp
+/usr/bin/x86_64-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libChaosGen.dll -Wl,--out-implib,libChaosGen.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/ChaosGen.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/ChaosGen.dir/linkLibs.rsp

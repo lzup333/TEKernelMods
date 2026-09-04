@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/CombatPets/build/CMakeFiles/CombatPets.dir
+/home/lzup/项目/TEKernelMods/CombatPets/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/CombatPets/build/CMakeFiles/rebuild_cache.dir

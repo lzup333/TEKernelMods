@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/AutoFisher/build/CMakeFiles/AutoFisher.dir
+/home/lzup/项目/TEKernelMods/AutoFisher/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/AutoFisher/build/CMakeFiles/rebuild_cache.dir

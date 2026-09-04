@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/Random Damage/build/CMakeFiles/main.dir
+/home/lzup/项目/TEKernelMods/Random Damage/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/Random Damage/build/CMakeFiles/rebuild_cache.dir

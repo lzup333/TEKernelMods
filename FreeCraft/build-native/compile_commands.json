@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/lzup/项目/TEKernelMods/FreeCraft/build-native",
+  "command": "/usr/bin/cc -DFreeCraft_EXPORTS  -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -fPIC -o CMakeFiles/FreeCraft.dir/main.c.o -c /home/lzup/项目/TEKernelMods/FreeCraft/main.c",
+  "file": "/home/lzup/项目/TEKernelMods/FreeCraft/main.c",
+  "output": "CMakeFiles/FreeCraft.dir/main.c.o"
+},
+{
+  "directory": "/home/lzup/项目/TEKernelMods/FreeCraft/build-native",
+  "command": "/usr/bin/cc -DFreeCraft_EXPORTS  -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -fPIC -o CMakeFiles/FreeCraft.dir/tefkernel/tef_api_imp.c.o -c /home/lzup/项目/TEKernelMods/FreeCraft/tefkernel/tef_api_imp.c",
+  "file": "/home/lzup/项目/TEKernelMods/FreeCraft/tefkernel/tef_api_imp.c",
+  "output": "CMakeFiles/FreeCraft.dir/tefkernel/tef_api_imp.c.o"
+}
+]

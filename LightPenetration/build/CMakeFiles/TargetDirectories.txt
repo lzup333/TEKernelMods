@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/LightPenetration/build/CMakeFiles/LightPenetration.dir
+/home/lzup/项目/TEKernelMods/LightPenetration/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/LightPenetration/build/CMakeFiles/rebuild_cache.dir

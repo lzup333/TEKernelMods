@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/lzup/项目/TEKernelMods/MultiProjectile/build-mingw/x86_64",
+  "command": "/usr/bin/x86_64-w64-mingw32-gcc -DMultiProjectile_EXPORTS  -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -o CMakeFiles/MultiProjectile.dir/main.c.obj -c /home/lzup/项目/TEKernelMods/MultiProjectile/main.c",
+  "file": "/home/lzup/项目/TEKernelMods/MultiProjectile/main.c",
+  "output": "CMakeFiles/MultiProjectile.dir/main.c.obj"
+},
+{
+  "directory": "/home/lzup/项目/TEKernelMods/MultiProjectile/build-mingw/x86_64",
+  "command": "/usr/bin/x86_64-w64-mingw32-gcc -DMultiProjectile_EXPORTS  -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -o CMakeFiles/MultiProjectile.dir/tefkernel/tef_api_imp.c.obj -c /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/tef_api_imp.c",
+  "file": "/home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/tef_api_imp.c",
+  "output": "CMakeFiles/MultiProjectile.dir/tefkernel/tef_api_imp.c.obj"
+}
+]

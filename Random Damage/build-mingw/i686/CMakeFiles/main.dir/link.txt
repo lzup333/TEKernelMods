@@ -1,0 +1,3 @@
+/usr/bin/cmake -E rm -f CMakeFiles/main.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar qc CMakeFiles/main.dir/objects.a @CMakeFiles/main.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libmain.dll -Wl,--out-implib,libmain.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/main.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/main.dir/linkLibs.rsp

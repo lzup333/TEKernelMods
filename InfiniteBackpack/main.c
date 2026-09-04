@@ -109,9 +109,12 @@ static patch_handle_t g_quickSpawn_method = NULL;  // Player.QuickSpawnItem(sour
 // ============ 方法函数指针(Android 平台) ============
 #if defined(__ANDROID__)
 static int  (*g_get_myPlayer)(void);               // Main.get_myPlayer
-static void (*g_newText)(void*, uint8_t, uint8_t, uint8_t); // Main.NewText
+// 1.4.5.8: NewItem 只有 9 参旧版 (X,Y,W,H,Type,Stack,noBroadcast,pfix,ownership)
+// 与 12 参 source 版, 10 参版本已不存在
+static int  (*g_newItem)(int, int, int, int, int, int, bool, int, int); // Item.NewItem
+// 1.4.5.8: NewText(string, byte R, byte G, byte B, bool onlyCurrentPlayer) = 5 参
+static void (*g_newText)(void*, uint8_t, uint8_t, uint8_t, bool); // Main.NewText
 static void* (*g_getMsgText)(void*);               // ChatMessage.get_Text
-static int  (*g_newItem)(void*, int, int, int, int, int, int, bool, int, bool); // Item.NewItem
 #endif
 
 // ============ 对象内偏移 (PE 1.4.5.6.4 dump.cs) ============
@@ -292,8 +295,9 @@ static bool GiveItem(void* player, int type, int stack) {
     const char* base = (const char*)player;
     const float* pos = (const float*)(base + kPosOffset);
     const int* wh = (const int*)(base + kWidthOffset);
-    g_newItem(NULL, (int)pos[0], (int)pos[1], wh[0], wh[1],
-              type, stack, false, 0, false);
+    // NewItem(X, Y, Width, Height, Type, Stack, noBroadcast, pfix, ownership)
+    g_newItem((int)pos[0], (int)pos[1], wh[0], wh[1],
+              type, stack, false, 0, 0);
     return true;
 #else
     if (!g_quickSpawn_method) return false;
@@ -328,7 +332,7 @@ static void ShowChat(const char* text) {
     if (!s) return;
 #if defined(__ANDROID__)
     if (!g_newText) return;
-    g_newText(s, 255, 255, 255);
+    g_newText(s, 255, 255, 255, false);
 #else
     if (!g_newText_method) return;
     uint8_t r = 255, g = 255, b = 255;
@@ -637,10 +641,9 @@ static void init_mod(kernel_mod_handle_t *handle) {
         patch_handle_t getter = patchlib_property_get_get_method(myPlayer_prop);
         if (getter) g_get_myPlayer = (int (*)(void))patchlib_method_get_pointer(getter);
     }
-    patch_handle_t newText_method = patchlib_type_get_method_by_param_count(g_main_type, "NewText", 4);
-    if (!newText_method) newText_method = patchlib_type_get_method(g_main_type, "NewText");
+    patch_handle_t newText_method = patchlib_type_get_method_by_param_count(g_main_type, "NewText", 5);
     if (newText_method) {
-        g_newText = (void (*)(void*, uint8_t, uint8_t, uint8_t))
+        g_newText = (void (*)(void*, uint8_t, uint8_t, uint8_t, bool))
                 patchlib_method_get_pointer(newText_method);
     }
     patch_handle_t msg_type = patchlib_type_get_type("Terraria.Chat", "ChatMessage");
@@ -651,10 +654,10 @@ static void init_mod(kernel_mod_handle_t *handle) {
             if (getter) g_getMsgText = (void* (*)(void*))patchlib_method_get_pointer(getter);
         }
     }
-    patch_handle_t newItem_method = patchlib_type_get_method_by_param_count(g_item_type, "NewItem", 10);
+    patch_handle_t newItem_method = patchlib_type_get_method_by_param_count(g_item_type, "NewItem", 9);
     if (!newItem_method) newItem_method = patchlib_type_get_method(g_item_type, "NewItem");
     if (newItem_method) {
-        g_newItem = (int (*)(void*, int, int, int, int, int, int, bool, int, bool))
+        g_newItem = (int (*)(int, int, int, int, int, int, bool, int, int))
                 patchlib_method_get_pointer(newItem_method);
     }
 #else

@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/ManaLock/build/CMakeFiles/ManaLock.dir
+/home/lzup/项目/TEKernelMods/ManaLock/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/ManaLock/build/CMakeFiles/rebuild_cache.dir

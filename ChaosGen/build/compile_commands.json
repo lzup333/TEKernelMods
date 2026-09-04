@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/lzup/项目/TEKernelMods/ChaosGen/build",
+  "command": "/home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --target=aarch64-none-linux-android27 --sysroot=/home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DChaosGen_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -ffunction-sections -fdata-sections -O3 -DNDEBUG  -std=gnu11 -fPIC -o CMakeFiles/ChaosGen.dir/main.c.o -c /home/lzup/项目/TEKernelMods/ChaosGen/main.c",
+  "file": "/home/lzup/项目/TEKernelMods/ChaosGen/main.c",
+  "output": "CMakeFiles/ChaosGen.dir/main.c.o"
+},
+{
+  "directory": "/home/lzup/项目/TEKernelMods/ChaosGen/build",
+  "command": "/home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/bin/clang --target=aarch64-none-linux-android27 --sysroot=/home/lzup/Android/Sdk/ndk/28.0.13004108/toolchains/llvm/prebuilt/linux-x86_64/sysroot -DChaosGen_EXPORTS  -g -DANDROID -fdata-sections -ffunction-sections -funwind-tables -fstack-protector-strong -no-canonical-prefixes -D_FORTIFY_SOURCE=2 -Wformat -Werror=format-security -ffunction-sections -fdata-sections -O3 -DNDEBUG  -std=gnu11 -fPIC -o CMakeFiles/ChaosGen.dir/tefkernel/tef_api_imp.c.o -c /home/lzup/项目/TEKernelMods/ChaosGen/tefkernel/tef_api_imp.c",
+  "file": "/home/lzup/项目/TEKernelMods/ChaosGen/tefkernel/tef_api_imp.c",
+  "output": "CMakeFiles/ChaosGen.dir/tefkernel/tef_api_imp.c.o"
+}
+]

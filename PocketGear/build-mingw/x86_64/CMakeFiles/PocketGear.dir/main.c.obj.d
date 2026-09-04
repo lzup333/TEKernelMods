@@ -1,0 +1,24 @@
+CMakeFiles/PocketGear.dir/main.c.obj: \
+ /home/lzup/项目/TEKernelMods/PocketGear/main.c \
+ /home/lzup/项目/TEKernelMods/PocketGear/mod-api/mod_core.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/mod-api/mod_logger.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/type.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/../tef_api.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/../tefstd/vector.h \
+ /usr/lib/gcc/x86_64-w64-mingw32/16.2.0/include/stdbool.h \
+ /usr/lib/gcc/x86_64-w64-mingw32/16.2.0/include/stddef.h \
+ /usr/x86_64-w64-mingw32/include/stddef.h \
+ /usr/x86_64-w64-mingw32/include/crtdefs.h \
+ /usr/x86_64-w64-mingw32/include/corecrt.h \
+ /usr/x86_64-w64-mingw32/include/_mingw.h \
+ /usr/x86_64-w64-mingw32/include/_mingw_mac.h \
+ /usr/x86_64-w64-mingw32/include/_mingw_secapi.h \
+ /usr/x86_64-w64-mingw32/include/vadefs.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/../tefstd/../tef_api.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/method.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/type.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/field.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/struct/array.h \
+ /home/lzup/项目/TEKernelMods/PocketGear/tefkernel/patchlib/struct/../type.h \
+ /usr/lib/gcc/x86_64-w64-mingw32/16.2.0/include/stdint.h \
+ /usr/x86_64-w64-mingw32/include/stdint.h

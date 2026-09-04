@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/MultiProjectile/build/CMakeFiles/MultiProjectile.dir
+/home/lzup/项目/TEKernelMods/MultiProjectile/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/MultiProjectile/build/CMakeFiles/rebuild_cache.dir

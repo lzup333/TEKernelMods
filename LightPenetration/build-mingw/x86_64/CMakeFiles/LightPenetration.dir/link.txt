@@ -1,0 +1,3 @@
+/usr/bin/cmake -E rm -f CMakeFiles/LightPenetration.dir/objects.a
+/usr/bin/x86_64-w64-mingw32-ar qc CMakeFiles/LightPenetration.dir/objects.a @CMakeFiles/LightPenetration.dir/objects1.rsp
+/usr/bin/x86_64-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libLightPenetration.dll -Wl,--out-implib,libLightPenetration.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/LightPenetration.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/LightPenetration.dir/linkLibs.rsp

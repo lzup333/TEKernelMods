@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/FreeCraft/build-native/CMakeFiles/FreeCraft.dir
+/home/lzup/项目/TEKernelMods/FreeCraft/build-native/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/FreeCraft/build-native/CMakeFiles/rebuild_cache.dir

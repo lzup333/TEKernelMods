@@ -1,0 +1,28 @@
+CMakeFiles/MultiProjectile.dir/main.c.obj: \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/main.c \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/mod-api/mod_core.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/mod-api/mod_logger.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/type.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/../tef_api.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/../tefstd/vector.h \
+ /usr/lib/gcc/i686-w64-mingw32/16.2.0/include/stdbool.h \
+ /usr/lib/gcc/i686-w64-mingw32/16.2.0/include/stddef.h \
+ /usr/i686-w64-mingw32/include/stddef.h \
+ /usr/i686-w64-mingw32/include/crtdefs.h \
+ /usr/i686-w64-mingw32/include/corecrt.h \
+ /usr/i686-w64-mingw32/include/_mingw.h \
+ /usr/i686-w64-mingw32/include/_mingw_mac.h \
+ /usr/i686-w64-mingw32/include/_mingw_secapi.h \
+ /usr/i686-w64-mingw32/include/vadefs.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/../tefstd/../tef_api.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/method.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/type.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/field.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/property.h \
+ /usr/lib/gcc/i686-w64-mingw32/16.2.0/include/stdint.h \
+ /usr/i686-w64-mingw32/include/stdint.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/struct/array.h \
+ /home/lzup/项目/TEKernelMods/MultiProjectile/tefkernel/patchlib/struct/../type.h \
+ /usr/i686-w64-mingw32/include/string.h \
+ /usr/i686-w64-mingw32/include/sec_api/string_s.h \
+ /usr/i686-w64-mingw32/include/math.h

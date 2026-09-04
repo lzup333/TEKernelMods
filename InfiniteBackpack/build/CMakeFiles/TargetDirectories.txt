@@ -1,0 +1,3 @@
+/home/lzup/项目/TEKernelMods/InfiniteBackpack/build/CMakeFiles/InfiniteBackpack.dir
+/home/lzup/项目/TEKernelMods/InfiniteBackpack/build/CMakeFiles/edit_cache.dir
+/home/lzup/项目/TEKernelMods/InfiniteBackpack/build/CMakeFiles/rebuild_cache.dir

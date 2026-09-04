@@ -1,0 +1,3 @@
+/usr/bin/cmake -E rm -f CMakeFiles/RandomLoot.dir/objects.a
+/usr/bin/i686-w64-mingw32-ar qc CMakeFiles/RandomLoot.dir/objects.a @CMakeFiles/RandomLoot.dir/objects1.rsp
+/usr/bin/i686-w64-mingw32-gcc -DBUILDING_DLL -ffunction-sections -fdata-sections -O3 -DNDEBUG -shared -Wl,--gc-sections -o libRandomLoot.dll -Wl,--out-implib,libRandomLoot.dll.a -Wl,--major-image-version,0,--minor-image-version,0 -Wl,--whole-archive CMakeFiles/RandomLoot.dir/objects.a -Wl,--no-whole-archive @CMakeFiles/RandomLoot.dir/linkLibs.rsp

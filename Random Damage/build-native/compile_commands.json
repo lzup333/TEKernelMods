@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/lzup/项目/TEKernelMods/Random Damage/build-native",
+  "command": "/usr/bin/cc -Dmain_EXPORTS  -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -fPIC -o CMakeFiles/main.dir/main.c.o -c \"/home/lzup/项目/TEKernelMods/Random Damage/main.c\"",
+  "file": "/home/lzup/项目/TEKernelMods/Random Damage/main.c",
+  "output": "CMakeFiles/main.dir/main.c.o"
+},
+{
+  "directory": "/home/lzup/项目/TEKernelMods/Random Damage/build-native",
+  "command": "/usr/bin/cc -Dmain_EXPORTS  -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -fPIC -o CMakeFiles/main.dir/tefkernel/tef_api_imp.c.o -c \"/home/lzup/项目/TEKernelMods/Random Damage/tefkernel/tef_api_imp.c\"",
+  "file": "/home/lzup/项目/TEKernelMods/Random Damage/tefkernel/tef_api_imp.c",
+  "output": "CMakeFiles/main.dir/tefkernel/tef_api_imp.c.o"
+}
+]

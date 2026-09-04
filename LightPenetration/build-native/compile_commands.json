@@ -1,0 +1,14 @@
+[
+{
+  "directory": "/home/lzup/项目/TEKernelMods/LightPenetration/build-native",
+  "command": "/usr/bin/cc -DLightPenetration_EXPORTS  -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -fPIC -o CMakeFiles/LightPenetration.dir/main.c.o -c /home/lzup/项目/TEKernelMods/LightPenetration/main.c",
+  "file": "/home/lzup/项目/TEKernelMods/LightPenetration/main.c",
+  "output": "CMakeFiles/LightPenetration.dir/main.c.o"
+},
+{
+  "directory": "/home/lzup/项目/TEKernelMods/LightPenetration/build-native",
+  "command": "/usr/bin/cc -DLightPenetration_EXPORTS  -ffunction-sections -fdata-sections -O3 -DNDEBUG -std=gnu11 -fPIC -o CMakeFiles/LightPenetration.dir/tefkernel/tef_api_imp.c.o -c /home/lzup/项目/TEKernelMods/LightPenetration/tefkernel/tef_api_imp.c",
+  "file": "/home/lzup/项目/TEKernelMods/LightPenetration/tefkernel/tef_api_imp.c",
+  "output": "CMakeFiles/LightPenetration.dir/tefkernel/tef_api_imp.c.o"
+}
+]

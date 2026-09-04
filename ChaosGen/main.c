@@ -112,8 +112,8 @@ static long g_workTilePos = 0;
 #endif
 
 // ============ 随机范围 ============
-// 所有合法图格类型 [0, TileID.Count), PE 端 TileID.Count = 753 (dump.cs:103101)
-static const uint32_t kTileTypeCount = 753u;
+// 所有合法图格类型 [0, TileID.Count), 1.4.5.8 端 TileID.Count = 754
+static const uint32_t kTileTypeCount = 754u;
 
 // 随机候选类型列表(排除 tileFrameImportant 的结构/数据图格), 运行期构建
 static uint16_t g_safeTypes[1024];
