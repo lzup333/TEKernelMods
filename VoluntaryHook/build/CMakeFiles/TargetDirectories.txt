@@ -1,3 +1,0 @@
-/home/lzup/项目/TEKernelMods/VoluntaryHook/build/CMakeFiles/VoluntaryHook.dir
-/home/lzup/项目/TEKernelMods/VoluntaryHook/build/CMakeFiles/edit_cache.dir
-/home/lzup/项目/TEKernelMods/VoluntaryHook/build/CMakeFiles/rebuild_cache.dir
