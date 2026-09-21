@@ -29,10 +29,14 @@
 //      (Projectile.cs:19333/19354)。随后浮标 AI 会逐帧把 ai[1] 加 1~5,
 //      等到 ai[1] 归零意味着鱼挣脱(需要尽快收线)。
 //      因此"鱼已上钩"的判定是: ai[0]==0 && ai[1]<0 && localAI[1]!=0。
-//   2. 收杆: 玩家收线时 Player.ItemCheck -> ItemCheck_PullFishingBobbers 会把
-//      ai[1] 转正、浮标飞回玩家身边并在 Kill 时把鱼交给玩家。
-//      因此本 Mod 在检测到上钩后, 在 ItemCheck 的 Prefix 阶段把
-//      Player.controlUseItem 置为 true, 原版 ItemCheck 会自然执行一次"收线+交鱼"。
+//   2. 收杆(选择性收线, 兼容多倍鱼钩): 原版 Player.ItemCheck ->
+//      ItemCheck_PullFishingBobbers 是"全局收线"——玩家一按使用键, 会把该玩家
+//      场上所有浮标一起收起(无条件给每个浮标置 ai[0]=1)。在多倍鱼钩
+//      (愿者上钩等)场景下, 只要一枚浮标上钩, 全部鱼钩都会被收回。
+//      因此本 Mod 在检测到上钩后: 先把"未上钩且空闲"的浮标临时标记为
+//      bobber=false, 再模拟按下使用键, 让原版 ItemCheck 只对真正上钩的浮标执行
+//      "收线+交鱼"; 收线结束后在 Postfix 里把这些浮标恢复为 bobber=true。
+//      这样鱼饵消耗/交鱼/NPC 生成全部仍走原版逻辑, 其余浮标继续等待。
 //   3. 抛竿: 手持鱼竿且场上没有浮标时, 同样的"模拟按键"会让原版抛出新浮标。
 //   4. 钓鱼状态: 玩家手动抛过一次竿(场上出现自己的浮标)后进入自动循环,
 //      切走鱼竿则退出。
@@ -63,11 +67,17 @@
 
 void (*mod_logger_write)(mod_log_level_t level, const char* tag, const char* fmt, ...) = NULL;
 
+// 单帧内最多临时隐藏的浮标数量(多倍鱼钩通常 ≤ 两位数)
+#define kMaxHiddenBobbers 64
+
 // ============ 状态 ============
 static patch_hook_id_t g_hook_id = PATCH_HOOK_INVALID_ID;
 static bool g_ready = false;       // 初始化是否完成
 static bool g_fishing = false;     // 自动钓鱼会话是否激活
 static int  g_castCooldown = 0;    // 抛竿冷却帧数
+static bool g_selectiveReel = false; // true=支持"只收上钩的那枚"(bobber 字段解析成功)
+static void* g_hiddenBobbers[kMaxHiddenBobbers]; // 本帧被临时隐藏的未上钩浮标
+static int   g_hiddenCount = 0;    // 本帧临时隐藏的浮标数量
 
 // ============ 类型句柄(仅初始化时用于获取成员) ============
 static patch_handle_t g_main_type = NULL;
@@ -86,6 +96,7 @@ static patch_handle_t g_projectile_field = NULL;      // Main.projectile      (P
 static patch_handle_t g_active_field = NULL;          // Projectile.active    (bool)
 static patch_handle_t g_owner_field = NULL;           // Projectile.owner     (int)
 static patch_handle_t g_aiStyle_field = NULL;         // Projectile.aiStyle   (int)
+static patch_handle_t g_bobber_field = NULL;          // Projectile.bobber    (bool)
 static patch_handle_t g_ai_field = NULL;              // Projectile.ai        (Float_FixedArray_3)
 static patch_handle_t g_localAI_field = NULL;         // Projectile.localAI   (Float_FixedArray_3)
 
@@ -230,6 +241,21 @@ static bool ProjFieldBool(patch_handle_t field, void* proj) {
 #endif
 }
 
+/** 写入弹幕 bool 字段; 失败返回 false */
+static bool SetProjFieldBool(patch_handle_t field, void* proj, bool value) {
+    if (!field || !proj) return false;
+#if defined(__ANDROID__)
+    bool* p = (bool*)patchlib_field_get_pointer(field, proj);
+    if (!p) return false;
+    *p = value;
+    return true;
+#else
+    bool v = value;
+    patchlib_field_set_value(field, proj, &v);
+    return true;
+#endif
+}
+
 /**
  * 读取弹幕 ai/localAI 数组第 idx 个 float。
  * Android: ai/localAI 是内联 struct, get_pointer 返回其存储地址;
@@ -296,13 +322,80 @@ static void ScanLocalBobbers(int myPlayer, int* outCount, bool* outBite) {
     }
 }
 
-// ============ Hook: Player.ItemCheck (Prefix) ============
+/** 判断该浮标本帧是否"已上钩"(与 ScanLocalBobbers 内判定一致) */
+static bool IsBobberBiting(void* proj) {
+    if (!proj || !g_ai_field || !g_localAI_field) return false;
+    float ai0 = 0.0f, ai1 = 0.0f, lai1 = 0.0f;
+    return ProjAiFloat(proj, g_ai_field, 0, &ai0) &&
+           ProjAiFloat(proj, g_ai_field, 1, &ai1) &&
+           ProjAiFloat(proj, g_localAI_field, 1, &lai1) &&
+           ai0 == 0.0f && ai1 < 0.0f && lai1 != 0.0f;
+}
+
+/**
+ * 方案A(选择性收线的关键): 把"未上钩且处于等待中(ai[0]==0)"的浮标
+ * 临时标记为 bobber=false, 让原版 ItemCheck_PullFishingBobbers 的全局收线
+ * 循环跳过它们, 只回收真正上钩的那一枚。
+ * 已在回收中的浮标(ai[0]!=0)保持可见, 用于阻止原版"收完最后一枚后立刻重新抛竿"。
+ * 被隐藏的浮标记录在 g_hiddenBobbers, 由 ItemCheck_Postfix 恢复。
+ */
+static void HideNonBitingBobbers(int myPlayer) {
+    g_hiddenCount = 0;
+    if (!g_bobber_field || !g_aiStyle_field || !g_ai_field) return;
+
+    void* arr = MainProjectileArray();
+    if (!arr) return;
+
+    const size_t n = patchlib_array_length(arr);
+    for (size_t i = 0; i < n; ++i) {
+        void* proj = NULL;
+        if (!patchlib_array_at(arr, i, &proj) || !proj) continue;
+        if (ProjFieldInt(g_aiStyle_field, proj) != 61) continue;      // 仅浮标
+        if (g_owner_field && ProjFieldInt(g_owner_field, proj) != myPlayer) continue;
+        if (g_active_field && !ProjFieldBool(g_active_field, proj)) continue;
+
+        // 只处理等待中的浮标; 已在回收(ai[0]!=0)的不动
+        float ai0 = 0.0f;
+        if (!ProjAiFloat(proj, g_ai_field, 0, &ai0) || ai0 != 0.0f) continue;
+
+        // 上钩的浮标保留可见, 交给原版收线+交鱼
+        if (IsBobberBiting(proj)) continue;
+
+        if (!SetProjFieldBool(g_bobber_field, proj, false)) continue;
+
+        if (g_hiddenCount < kMaxHiddenBobbers) {
+            g_hiddenBobbers[g_hiddenCount++] = proj;
+        } else {
+            // 超出容量: 立即恢复, 避免浮标被永久隐藏
+            SetProjFieldBool(g_bobber_field, proj, true);
+        }
+    }
+}
+
+/** 恢复本帧被临时隐藏的浮标 */
+static void RestoreHiddenBobbers(void) {
+    if (g_hiddenCount <= 0) return;
+    for (int i = 0; i < g_hiddenCount; ++i) {
+        void* proj = g_hiddenBobbers[i];
+        if (!proj) continue;
+        // 防止弹幕槽位被复用: 仍应是浮标(aiStyle==61)
+        if (g_aiStyle_field && ProjFieldInt(g_aiStyle_field, proj) != 61) continue;
+        SetProjFieldBool(g_bobber_field, proj, true);
+    }
+    g_hiddenCount = 0;
+}
+
+// ============ Hook: Player.ItemCheck (Prefix/Postfix) ============
 // 在 ItemCheck 执行前判定: 需要抛竿/收杆时把 controlUseItem 置 true,
 // 让原版 ItemCheck 自然执行一次抛竿或收线+交鱼。prefix 必须返回 false(执行原方法)。
+// 收线时若启用了选择性收线, 会在 Prefix 隐藏未上钩的浮标, 并在 Postfix 恢复。
 static bool ItemCheck_Prefix(patch_handle_t instance, void **args,
                              const patch_method_signature_t *sig_info, void *result) {
     (void)args; (void)sig_info; (void)result;
     if (!g_ready || !instance) return false;
+
+    // 每次进入 ItemCheck 先清空上一帧的临时隐藏记录(Postfix 已恢复, 这里兜底)
+    g_hiddenCount = 0;
 
     // 仅本地玩家
     const int myPlayer = LocalPlayer();
@@ -330,8 +423,10 @@ static bool ItemCheck_Prefix(patch_handle_t instance, void **args,
     if (bobberCount > 0) {
         g_fishing = true;  // 玩家开始钓鱼了
 
-        // 鱼已上钩: 模拟按下使用键, 原版 ItemCheck 会自动收线并交鱼
+        // 鱼已上钩: 模拟按下使用键, 原版 ItemCheck 会自动收线并交鱼。
+        // 多倍鱼钩场景下, 先隐藏"未上钩"的浮标, 让原版全局收线只回收真正上钩的那枚。
         if (hasBite && !IsAnimating(instance)) {
+            if (g_selectiveReel) HideNonBitingBobbers(myPlayer);
             SetControlUseItem(instance);
         }
         return false;
@@ -349,6 +444,13 @@ static bool ItemCheck_Prefix(patch_handle_t instance, void **args,
 
     // false = 正常执行原方法(反向语义)
     return false;
+}
+
+// Postfix: 无论 Prefix 是否隐藏过浮标, 这里统一恢复, 保证 bobber 标记不残留
+static void ItemCheck_Postfix(patch_handle_t instance, void **args, void *result,
+                              const patch_method_signature_t *sig_info) {
+    (void)instance; (void)args; (void)result; (void)sig_info;
+    RestoreHiddenBobbers();
 }
 
 // ============ 模块初始化 ============
@@ -404,8 +506,12 @@ static void init_mod(kernel_mod_handle_t *handle) {
     g_active_field = patchlib_type_get_field(g_projectile_type, "active");
     g_owner_field = patchlib_type_get_field(g_projectile_type, "owner");
     g_aiStyle_field = patchlib_type_get_field(g_projectile_type, "aiStyle");
+    g_bobber_field = patchlib_type_get_field(g_projectile_type, "bobber");
     g_ai_field = patchlib_type_get_field(g_projectile_type, "ai");
     g_localAI_field = patchlib_type_get_field(g_projectile_type, "localAI");
+
+    // 选择性收线依赖 bobber 字段(用于临时隐藏未上钩浮标); 解析失败则退回旧的全收行为
+    g_selectiveReel = (g_bobber_field != NULL);
 
 #if defined(__ANDROID__)
     if (mod_logger_write) {
@@ -435,8 +541,8 @@ static void init_mod(kernel_mod_handle_t *handle) {
         return;
     }
 
-    // 5. 安装前缀 Hook
-    g_hook_id = patchlib_install_prepost_hook(itemcheck_method, ItemCheck_Prefix, NULL);
+    // 5. 安装前缀/后缀 Hook (Postfix 用于恢复被临时隐藏的浮标)
+    g_hook_id = patchlib_install_prepost_hook(itemcheck_method, ItemCheck_Prefix, ItemCheck_Postfix);
     if (g_hook_id == PATCH_HOOK_INVALID_ID) {
         if (mod_logger_write) {
             mod_logger_write(MOD_LOG_LEVEL_ERROR, "AutoFisher", "安装 ItemCheck Hook 失败");
@@ -447,7 +553,8 @@ static void init_mod(kernel_mod_handle_t *handle) {
     g_ready = true;
     if (mod_logger_write) {
         mod_logger_write(MOD_LOG_LEVEL_INFO, "AutoFisher",
-                         "成功 Hook ItemCheck (hook_id=%d), 自动钓鱼已启用", (int)g_hook_id);
+                         "成功 Hook ItemCheck (hook_id=%d), 自动钓鱼已启用 (选择性收线=%s)",
+                         (int)g_hook_id, g_selectiveReel ? "开" : "关");
     }
 }
 
@@ -463,6 +570,8 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
     g_ready = false;
     g_fishing = false;
     g_castCooldown = 0;
+    g_selectiveReel = false;
+    g_hiddenCount = 0;
 
 #if defined(__ANDROID__)
     g_get_myPlayer = NULL;
@@ -481,6 +590,7 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
     g_active_field = NULL;
     g_owner_field = NULL;
     g_aiStyle_field = NULL;
+    g_bobber_field = NULL;
     g_ai_field = NULL;
     g_localAI_field = NULL;
 
@@ -492,9 +602,9 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
 // ============ 模块信息 ============
 static kernel_mod_info_t g_mod_info = {
         .pkg_id = "lzup.player.autofisher",
-        .version_code = 1,
+        .version_code = 2,
         .api_version = 1,
-        .version = "1.0.0",
+        .version = "1.0.1",
 };
 
 static kernel_mod_info_t *get_info(void) {

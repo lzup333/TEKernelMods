@@ -5,7 +5,7 @@
   "version": "4.5.0",
   "versionCode": 20260914,
   "brieflyDescribe": "宠物主动攻击敌怪，多宠物共存，伤害随时期成长",
-  "description": "宠物保留各自原有 AI 与行为，附近有敌怪时主动跑过去攻击，伤害随世界进程成长（9 个时期）。\n宠物物品标记为召唤伤害物品并同步伤害数值。\n支持 PC / 手机版 Terraria 1.4.5",
+  "description": "宠物保留各自原有 AI 与行为，附近有敌怪时主动跑过去攻击，伤害随世界进程成长（9 个时期）。\n宠物物品标记为召唤伤害物品并同步伤害数值。",
   "features": [],
   "sizeCategory": "TINY",
   "targetGameVersion": "1.4.5.0",
