@@ -29,8 +29,8 @@
 //        - NewProjectile(IEntitySource, float, float, float, float, int, int, float, ...) (13 参)
 //      其中 Vector2 重载内部委托给 float 重载(Projectile.cs:10194), 因此
 //      只 Hook float 重载即可覆盖所有弹幕创建, 不会重复复制。
-//   2. 过滤条件(仅复制"玩家+武器弹幕"):
-//        - Owner 必须为本地玩家(Main.myPlayer), 排除 NPC/环境弹幕;
+//   2. 过滤条件:
+//        - 复制所有弹幕, 玩家与敌对/NPC 弹幕均生效;
 //        - 排除非武器弹幕: 钓鱼浮标(bobber), 钩爪(aiStyle==7),
 //          召唤物(minion) 与 哨兵(sentry)。
 //   3. 复制方式: 在 float 重载的 postfix 里读取原始参数(起点/速度/类型/伤害等),
@@ -159,7 +159,7 @@ static void* GetProjectileAt(int idx) {
 
 /**
  * 判断该弹幕是否为"武器弹幕"(可被复制)。
- * 过滤掉非武器来源的玩家弹幕: 钓鱼浮标 / 钩爪 / 召唤物 / 哨兵。
+ * 过滤掉非武器来源的弹幕: 钓鱼浮标 / 钩爪 / 召唤物 / 哨兵。
  */
 static bool IsMultiplyCandidate(void* proj) {
     if (g_bobber_field && ProjBool(g_bobber_field, proj)) return false;  // 钓鱼浮标
@@ -176,10 +176,8 @@ static void NewProjectile_Postfix(patch_handle_t instance, void **args, void *re
     if (!g_ready || g_duplicating) return;
     if (!args || !result) return;
 
-    // args[8] = int Owner
+    // args[8] = int Owner (仅用于日志; 不再限制来源, NPC/敌对弹幕同样复制)
     const int owner = *(int*)args[8];
-    const int myPlayer = LocalPlayer();
-    if (myPlayer < 0 || owner != myPlayer) return;  // 仅本地玩家弹幕
 
     // result 为弹幕索引, 通过 Main.projectile 取对象做非武器过滤
     const int idx = *(int*)result;
