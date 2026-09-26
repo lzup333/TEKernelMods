@@ -24,6 +24,18 @@
 //   3. /time <时:分>            设置游戏内时间(如 /time 12:30, 24 小时制)
 //   4. /heal                    恢复全部生命与法力
 //   5. /buff <buffID> [秒数]    给自己添加 buff(默认 300 秒)
+//   6. /setSpawnRate [间隔]     设置刷怪间隔 NPC.defaultSpawnRate (默认 600, 越小刷怪越快)
+//                               不带参数则显示当前值; /setSpawnRate reset 恢复默认
+//   7. /setMaxSpawns [上限]     设置刷怪上限 NPC.defaultMaxSpawns (默认 5, 附近最大敌怪数)
+//                               不带参数则显示当前值; /setMaxSpawns reset 恢复默认
+//
+// 刷怪原理(PC 1.4.5.8 NPC.cs:474 GetSpawnRate):
+//   每次刷怪尝试时: 若 Main.rand.Next(spawnRate) == 0 才生成 (概率 1/spawnRate);
+//   且附近敌怪数 nearbyActiveNPCs >= maxSpawns 时不再生成。
+//   原版在这两个基础值(defaultSpawnRate=600 / defaultMaxSpawns=5)上按
+//   时间/地形/事件/蜡烛等做乘法修正, 并做上限钳制
+//   (maxSpawns 最多为 defaultMaxSpawns*3, spawnRate 最低为 defaultSpawnRate*0.1)。
+//   直接改写这两个静态字段即可整体缩放刷怪速度与上限, 且钳制范围随之缩放。
 //
 // 注: /sp(生成生物) 已暂时移除——桌面端内核无法读取玩家 Vector2 位置,
 //     无法在玩家附近生成生物, 待内核支持后恢复。
@@ -81,6 +93,12 @@ static patch_handle_t g_creativeGod_field = NULL;  // Player.creativeGodMode(boo
 static patch_handle_t g_mainPlayer_field = NULL;   // Main.player           (Player[], 静态)
 static patch_handle_t g_dayTime_field = NULL;      // Main.dayTime          (bool, 静态)
 static patch_handle_t g_time_field = NULL;         // Main.time             (double, 静态)
+static patch_handle_t g_defaultSpawnRate_field = NULL;  // NPC.defaultSpawnRate (int, 静态, 刷新间隔)
+static patch_handle_t g_defaultMaxSpawns_field = NULL;  // NPC.defaultMaxSpawns (int, 静态, 刷怪上限)
+
+// 原版刷怪基础值(NPC.cs:6190/6192), 用于 reset 与钳制提示
+static const int kBaseSpawnRate = 600;
+static const int kBaseMaxSpawns = 5;
 
 // ============ 方法函数指针(Android 平台) ============
 #if defined(__ANDROID__)
@@ -214,13 +232,56 @@ static const char* TrimLeft(const char* s) {
     return s;
 }
 
+/** 大小写不敏感地判断 s 是否以 prefix 开头(prefix 以 '\0' 结尾) */
+static bool IStartsWith(const char* s, const char* prefix) {
+    if (!s || !prefix) return false;
+    while (*prefix) {
+        char a = *s++;
+        char b = *prefix++;
+        if (a >= 'A' && a <= 'Z') a += 32;
+        if (b >= 'A' && b <= 'Z') b += 32;
+        if (a != b) return false;
+    }
+    return true;
+}
+
+/** 读取静态 int 字段; 失败返回 false */
+static bool ReadStaticInt(patch_handle_t field, int* out) {
+    if (!field || !out) return false;
+#if defined(__ANDROID__)
+    int* p = (int*)patchlib_field_get_pointer(field, NULL);
+    if (!p) return false;
+    *out = *p;
+    return true;
+#else
+    *out = 0;
+    patchlib_field_get_value(field, NULL, out);
+    return true;
+#endif
+}
+
+/** 写入静态 int 字段; 失败返回 false */
+static bool WriteStaticInt(patch_handle_t field, int value) {
+    if (!field) return false;
+#if defined(__ANDROID__)
+    int* p = (int*)patchlib_field_get_pointer(field, NULL);
+    if (!p) return false;
+    *p = value;
+    return true;
+#else
+    patchlib_field_set_value(field, NULL, &value);
+    return true;
+#endif
+}
+
 /** 判断聊天文本是否为本 Mod 的指令 */
 static bool IsModCommand(const char* t) {
     if (!t) return false;
     return strncmp(t, "/get", 4) == 0 || strncmp(t, "/give", 5) == 0 ||
            strncmp(t, "/god", 4) == 0 ||
            strncmp(t, "/time", 5) == 0 || strncmp(t, "/heal", 5) == 0 ||
-           strncmp(t, "/buff", 5) == 0;
+           strncmp(t, "/buff", 5) == 0 ||
+           IStartsWith(t, "/setSpawnRate") || IStartsWith(t, "/setMaxSpawns");
 }
 
 /**
@@ -423,6 +484,90 @@ static void HandleCommand(const char* raw) {
         ShowChat(buf);
         return;
     }
+
+    // /setSpawnRate [间隔]  设置 NPC.defaultSpawnRate (刷新间隔, 默认 600, 越小刷怪越快)
+    if (IStartsWith(raw, "/setSpawnRate")) {
+        // "/setSpawnRate" 共 13 个字符
+        const char* rest = TrimLeft(raw + 13);
+        if (!g_defaultSpawnRate_field) {
+            ShowChat("[指令助手] NPC.defaultSpawnRate 字段解析失败");
+            return;
+        }
+        if (*rest == '\0') {                       // 无参数: 显示当前值
+            int cur = 0;
+            char buf[128];
+            if (ReadStaticInt(g_defaultSpawnRate_field, &cur)) {
+                snprintf(buf, sizeof(buf),
+                         "[指令助手] 刷怪间隔 defaultSpawnRate = %d (默认 %d, 越小刷怪越快)",
+                         cur, kBaseSpawnRate);
+            } else {
+                snprintf(buf, sizeof(buf), "[指令助手] 读取 defaultSpawnRate 失败");
+            }
+            ShowChat(buf);
+            return;
+        }
+        if (IStartsWith(rest, "reset")) {          // 恢复默认
+            WriteStaticInt(g_defaultSpawnRate_field, kBaseSpawnRate);
+            ShowChat("[指令助手] 刷怪间隔已恢复默认 (600)");
+            return;
+        }
+        char* end = NULL;
+        long v = strtol(rest, &end, 10);
+        if (end == rest) {
+            ShowChat("[指令助手] 用法: /setSpawnRate <间隔> (默认 600, 越小刷怪越快), 或 reset");
+            return;
+        }
+        if (v < 1) v = 1;
+        if (v > 1000000) v = 1000000;
+        WriteStaticInt(g_defaultSpawnRate_field, (int)v);
+        char buf[128];
+        snprintf(buf, sizeof(buf),
+                 "[指令助手] 刷怪间隔已设为 %ld (默认 %d, 越小刷怪越快)", v, kBaseSpawnRate);
+        ShowChat(buf);
+        return;
+    }
+
+    // /setMaxSpawns [上限]  设置 NPC.defaultMaxSpawns (刷怪上限, 默认 5)
+    if (IStartsWith(raw, "/setMaxSpawns")) {
+        // "/setMaxSpawns" 共 13 个字符
+        const char* rest = TrimLeft(raw + 13);
+        if (!g_defaultMaxSpawns_field) {
+            ShowChat("[指令助手] NPC.defaultMaxSpawns 字段解析失败");
+            return;
+        }
+        if (*rest == '\0') {                       // 无参数: 显示当前值
+            int cur = 0;
+            char buf[128];
+            if (ReadStaticInt(g_defaultMaxSpawns_field, &cur)) {
+                snprintf(buf, sizeof(buf),
+                         "[指令助手] 刷怪上限 defaultMaxSpawns = %d (默认 %d, 实际最多为其 3 倍)",
+                         cur, kBaseMaxSpawns);
+            } else {
+                snprintf(buf, sizeof(buf), "[指令助手] 读取 defaultMaxSpawns 失败");
+            }
+            ShowChat(buf);
+            return;
+        }
+        if (IStartsWith(rest, "reset")) {          // 恢复默认
+            WriteStaticInt(g_defaultMaxSpawns_field, kBaseMaxSpawns);
+            ShowChat("[指令助手] 刷怪上限已恢复默认 (5)");
+            return;
+        }
+        char* end = NULL;
+        long v = strtol(rest, &end, 10);
+        if (end == rest) {
+            ShowChat("[指令助手] 用法: /setMaxSpawns <上限> (默认 5), 或 reset");
+            return;
+        }
+        if (v < 1) v = 1;
+        if (v > 100) v = 100;                      // 实际可到 3 倍, 过高易卡顿
+        WriteStaticInt(g_defaultMaxSpawns_field, (int)v);
+        char buf[128];
+        snprintf(buf, sizeof(buf),
+                 "[指令助手] 刷怪上限已设为 %ld (默认 %d, 实际最多为其 3 倍)", v, kBaseMaxSpawns);
+        ShowChat(buf);
+        return;
+    }
 }
 
 // ============ Hook: 单机聊天消息处理 ============
@@ -604,6 +749,9 @@ static void init_mod(kernel_mod_handle_t *handle) {
     g_mainPlayer_field = patchlib_type_get_field(g_main_type, "player");
     g_dayTime_field = patchlib_type_get_field(g_main_type, "dayTime");
     g_time_field = patchlib_type_get_field(g_main_type, "time");
+    // 刷怪参数(静态字段): NPC.defaultSpawnRate(间隔) / NPC.defaultMaxSpawns(上限)
+    g_defaultSpawnRate_field = patchlib_type_get_field(g_npc_type, "defaultSpawnRate");
+    g_defaultMaxSpawns_field = patchlib_type_get_field(g_npc_type, "defaultMaxSpawns");
 
     if (mod_logger_write) {
         mod_logger_write(MOD_LOG_LEVEL_INFO, "ChatCommands",
@@ -612,6 +760,9 @@ static void init_mod(kernel_mod_handle_t *handle) {
                          (void*)g_statMana_field, (void*)g_statManaMax_field,
                          (void*)g_creativeGod_field, (void*)g_mainPlayer_field,
                          (void*)g_dayTime_field, (void*)g_time_field);
+        mod_logger_write(MOD_LOG_LEVEL_INFO, "ChatCommands",
+                         "spawn fields: spawnRate=%p maxSpawns=%p",
+                         (void*)g_defaultSpawnRate_field, (void*)g_defaultMaxSpawns_field);
     }
 
     // 6. 获取 Hook 目标方法并安装 postfix hook
@@ -708,6 +859,8 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
     g_mainPlayer_field = NULL;
     g_dayTime_field = NULL;
     g_time_field = NULL;
+    g_defaultSpawnRate_field = NULL;
+    g_defaultMaxSpawns_field = NULL;
 
     if (mod_logger_write) {
         mod_logger_write(MOD_LOG_LEVEL_INFO, "ChatCommands", "清理模组");
@@ -717,9 +870,9 @@ static void cleanup_mod(kernel_mod_handle_t *handle) {
 // ============ 模块信息 ============
 static kernel_mod_info_t g_mod_info = {
         .pkg_id = "lzup.player.chatcommands",
-        .version_code = 1,
+        .version_code = 2,
         .api_version = 1,
-        .version = "1.0.0",
+        .version = "1.2.0",
 };
 
 static kernel_mod_info_t *get_info(void) {

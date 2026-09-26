@@ -1,11 +1,11 @@
 {
-  "pkgId": "lzup.player.chatcommands",
-  "name": "聊天指令助手 (ChatCommands)",
+  "pkgId": "lzup.player.vampire",
+  "name": "吸血鬼 (Vampire)",
   "author": "lzup",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "versionCode": 20260924,
-  "brieflyDescribe": "在聊天框输入指令生成物品、开关无敌、设置时间、调整刷怪等",
-  "description": "在聊天框输入指令即可获得强大功能：\n/get、/give 生成物品\n/god 开启无敌模式\n/time 设置时间\n/heal 回复生命与法力\n/buff 添加 Buff\n/setSpawnRate 设置刷怪间隔（默认 600，越小刷怪越快）\n/setMaxSpawns 设置刷怪上限（默认 5）\n注：/sp、/tp、/spawn 等传送类指令暂未支持（桌面端内核暂无法读取玩家位置，待支持后恢复）。",
+  "brieflyDescribe": "每次攻击 5% 概率回复 20 点生命",
+  "description": "每次攻击有 5% 的概率回复 20 点生命。",
   "features": [],
   "sizeCategory": "TINY",
   "targetGameVersion": "1.4.5.0",
@@ -45,8 +45,8 @@
   },
   "dependence": [],
   "conflicts": [],
-  "stableVerified": true,
+  "stableVerified": false,
   "experimental": false,
   "deprecated": false,
-  "hasExtendedContent": true
+  "hasExtendedContent": false
 }
