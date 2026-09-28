@@ -8,9 +8,9 @@
   "description": "使物品栏以及银行、保险箱、护卫保险箱、虚空保险库中的饰品与装备效果全部生效（翅膀除外）。",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,

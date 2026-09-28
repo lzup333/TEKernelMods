@@ -8,9 +8,9 @@
   "description": "怪物每次受击都会额外掉落一件随机物品(1~6144)。",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,

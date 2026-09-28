@@ -8,9 +8,9 @@
   "description": "破坏矿石或宝石时，自动连锁破坏所有同类型且相连的矿石与宝石。\n仅连锁矿石与宝石，挖石头、泥土等普通方块不触发。",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,

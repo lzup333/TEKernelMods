@@ -8,9 +8,9 @@
   "description": "亮堂堂！\n彩色照明模式照亮全屏，其他照明模式照亮周围（PC端只在彩色模式生效）",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,

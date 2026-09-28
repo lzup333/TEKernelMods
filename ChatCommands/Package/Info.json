@@ -8,9 +8,9 @@
   "description": "在聊天框输入指令即可获得强大功能：\n/get、/give 生成物品\n/god 开启无敌模式\n/time 设置时间\n/heal 回复生命与法力\n/buff 添加 Buff\n/setSpawnRate 设置刷怪间隔（默认 600，越小刷怪越快）\n/setMaxSpawns 设置刷怪上限（默认 5）\n注：/sp、/tp、/spawn 等传送类指令暂未支持（桌面端内核暂无法读取玩家位置，待支持后恢复）。",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,

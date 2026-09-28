@@ -8,9 +8,9 @@
   "description": "聊天框输入指令使用无限背包:\n/store  存放背包里全部非快捷栏物品(第10~49格)\n/take <槽位> [数量]  按槽位取出物品(槽位=/backpack 列表序号)\n/backpack  查看无限背包内容(带槽位序号与物品图标)\n存档自动持久化, 重启游戏不丢失。",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,

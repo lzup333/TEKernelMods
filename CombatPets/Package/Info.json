@@ -8,9 +8,9 @@
   "description": "宠物保留各自原有 AI 与行为，附近有敌怪时主动跑过去攻击，伤害随世界进程成长（9 个时期）。\n宠物物品标记为召唤伤害物品并同步伤害数值。",
   "features": [],
   "sizeCategory": "TINY",
-  "targetGameVersion": "1.4.5.0",
-  "minGameVersion": "1.4.5.0",
-  "maxGameVersion": "1.4.5.0",
+  "targetGameVersion": "1.4.5.8",
+  "minGameVersion": "1.4.5.8",
+  "maxGameVersion": "1.4.5.8",
   "support": {
     "android": {
       "arm64": true,
